@@ -20,7 +20,7 @@ package com.quixpath.internal.interfaces.impl;
 
 import innovimax.quixproc.datamodel.MatchEvent;
 import innovimax.quixproc.datamodel.QuixEvent;
-import innovimax.quixproc.datamodel.Stream;
+import innovimax.quixproc.datamodel.IStream;
 
 import javax.xml.xpath.XPathExpressionException;
 
@@ -72,7 +72,7 @@ public class QuiXPathImpl implements IQuiXPath {
 	}
 
 	@Override
-	public Stream<MatchEvent> update(IQuiXPathExpression expression,
+	public IStream<MatchEvent> update(IQuiXPathExpression expression,
 			QuixEvent event) throws QuiXPathException {
 		return expression.update(event);
 	}

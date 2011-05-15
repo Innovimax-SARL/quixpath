@@ -19,17 +19,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 package innovimax.quixproc.datamodel;
 
-import innovimax.quixproc.datamodel.shared.SimpleQueue;
+import innovimax.quixproc.datamodel.shared.ISimpleQueue;
 import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmSequenceIterator;
 
 public abstract class EventConverter implements Runnable {
-    private SimpleQueue<QuixEvent> doc = null;   
+    private ISimpleQueue<QuixEvent> doc = null;   
     private XdmNode node = null;      
     private boolean running = true;             
     
-    public EventConverter(SimpleQueue<QuixEvent> doc, XdmNode node) {  
+    public EventConverter(ISimpleQueue<QuixEvent> doc, XdmNode node) {  
         this.doc = doc;              
         this.node = node;
     }

@@ -21,13 +21,13 @@ package innovimax.quixproc.datamodel.shared;
 
 //import java.util.concurrent.locks.AbstractQueuedSynchronizer;
 
-import innovimax.quixproc.datamodel.Stream;
+import innovimax.quixproc.datamodel.IStream;
 
 import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
 
-public final class SmartAppendQueue<T> implements Queue<T> {
+public final class SmartAppendQueue<T> implements IQueue<T> {
   private final static boolean DEBUG = false;
   private static int counter = 0;
   private static Set<Integer> open = Collections.synchronizedSet(new TreeSet<Integer>());
@@ -111,7 +111,7 @@ public final class SmartAppendQueue<T> implements Queue<T> {
     }
   }
 
-  private static class LocalReader<T> implements Stream<T> {
+  private static class LocalReader<T> implements IStream<T> {
     private LinkedItem<T> current;
     // debug
     private String name;
@@ -175,9 +175,9 @@ public final class SmartAppendQueue<T> implements Queue<T> {
   }
 
   @Override
-  public Stream<T> registerReader() {
+  public IStream<T> registerReader() {
     LocalReader<T> l = new LocalReader<T>(head);
-    Stream<T> result = l;
+    IStream<T> result = l;
     if (DEBUG) l.setName(""+this.rank+"/"+currentReader+"/"+readerCount);
     currentReader++;
     if (readerCount > currentReader) {
@@ -204,7 +204,7 @@ public final class SmartAppendQueue<T> implements Queue<T> {
     }
 
     @Override
-    public Stream<T> registerReader() {
+    public IStream<T> registerReader() {
       return new LocalReader<T>(head);
     }
 

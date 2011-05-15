@@ -20,7 +20,7 @@ package com.quixpath.internal.interfaces.impl;
 
 import innovimax.quixproc.datamodel.MatchEvent;
 import innovimax.quixproc.datamodel.QuixEvent;
-import innovimax.quixproc.datamodel.shared.SimpleQueue;
+import innovimax.quixproc.datamodel.shared.ISimpleQueue;
 import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
@@ -32,7 +32,7 @@ import net.sf.saxon.s9api.XdmSequenceIterator;
  */
 public class MyEventConverter implements Runnable {
 
-	private final SimpleQueue<MatchEvent> doc;
+	private final ISimpleQueue<MatchEvent> doc;
 	private XdmNode node = null;
 	private boolean running = true;
 	private final XdmSequenceIterator it;
@@ -44,7 +44,7 @@ public class MyEventConverter implements Runnable {
 	 * @param it
 	 *            returns the node is the document order.
 	 */
-	public MyEventConverter(SimpleQueue<MatchEvent> doc, XdmNode node,
+	public MyEventConverter(ISimpleQueue<MatchEvent> doc, XdmNode node,
 			XdmSequenceIterator it) {
 		// this.runtime = runtime;
 		this.doc = doc;

@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 package com.quixpath.internal.queryevaluation;
 
 import innovimax.quixproc.datamodel.MatchEvent;
-import innovimax.quixproc.datamodel.Stream;
+import innovimax.quixproc.datamodel.IStream;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -47,8 +47,8 @@ public class Buffer implements IBuffer {
 	}
 
 	@Override
-	public Stream<MatchEvent> read() {
-		return new Stream<MatchEvent>() {
+	public IStream<MatchEvent> read() {
+		return new IStream<MatchEvent>() {
 
 			@Override
 			public boolean hasNext() {

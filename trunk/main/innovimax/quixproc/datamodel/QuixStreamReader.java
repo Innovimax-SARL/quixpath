@@ -30,10 +30,10 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 public class QuixStreamReader implements XMLStreamReader {
-  private final Stream<QuixEvent> qs;
+  private final IStream<QuixEvent> qs;
   private final static boolean DEBUG = false;
   private final static int POSITION = 1;
-  public QuixStreamReader(Stream<QuixEvent> qs) {
+  public QuixStreamReader(IStream<QuixEvent> qs) {
     if (DEBUG) System.out.println(Thread.currentThread().getStackTrace()[POSITION].getMethodName());
     this.qs = qs;
   }

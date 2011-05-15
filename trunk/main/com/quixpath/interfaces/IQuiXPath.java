@@ -20,7 +20,7 @@ package com.quixpath.interfaces;
 
 import innovimax.quixproc.datamodel.MatchEvent;
 import innovimax.quixproc.datamodel.QuixEvent;
-import innovimax.quixproc.datamodel.Stream;
+import innovimax.quixproc.datamodel.IStream;
 
 import com.quixpath.exceptions.QuiXPathException;
 import com.quixpath.exceptions.UnsupportedQueryException;
@@ -58,7 +58,7 @@ public interface IQuiXPath {
 	 * @throws QuiXPathException
 	 *             If the query can not be evaluated.
 	 */
-	public Stream<MatchEvent> update(IQuiXPathExpression expression,
+	public IStream<MatchEvent> update(IQuiXPathExpression expression,
 			QuixEvent event) throws QuiXPathException;
 
 }

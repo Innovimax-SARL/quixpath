@@ -29,11 +29,11 @@ import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmNode;
 
 public class DOMConverter {
-  private final Stream<QuixEvent> reader;
+  private final IStream<QuixEvent> reader;
   private final DocumentBuilder db;
   private XdmNode node = null;
 
-  public DOMConverter(DocumentBuilder db, Stream<QuixEvent> reader) {
+  public DOMConverter(DocumentBuilder db, IStream<QuixEvent> reader) {
     this.reader = reader;
     this.db = db;
   }
