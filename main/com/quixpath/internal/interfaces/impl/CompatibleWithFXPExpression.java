@@ -20,7 +20,7 @@ package com.quixpath.internal.interfaces.impl;
 
 import innovimax.quixproc.datamodel.MatchEvent;
 import innovimax.quixproc.datamodel.QuixEvent;
-import innovimax.quixproc.datamodel.Stream;
+import innovimax.quixproc.datamodel.IStream;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -116,7 +116,7 @@ import fr.inria.mostrare.xpath.pub.IFXPTerm;
 	}
 
 	@Override
-	public Stream<MatchEvent> update(final QuixEvent event)
+	public IStream<MatchEvent> update(final QuixEvent event)
 			throws QuiXPathException {
 		if (event.isStartSequence()) {
 			init();

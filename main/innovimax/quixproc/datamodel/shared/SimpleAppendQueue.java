@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 package innovimax.quixproc.datamodel.shared;
 
-import innovimax.quixproc.datamodel.Stream;
+import innovimax.quixproc.datamodel.IStream;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +31,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * 
  * @author innovimax
  */
-public class SimpleAppendQueue<T> implements Queue<T> {
+public class SimpleAppendQueue<T> implements IQueue<T> {
 
   private final static boolean         DEBUG = false;
   private final List<T>                events;
@@ -86,7 +86,7 @@ public class SimpleAppendQueue<T> implements Queue<T> {
     if (DEBUG) System.out.println("CreateSimpleQEQ (closed) : " + rank);
   }
 
-  private class LocalReader implements Stream<T> {
+  private class LocalReader implements IStream<T> {
     // private final Iterator<QuixEvent> iterator;
     private int     i            = 0;
     private boolean readerClosed = false;
@@ -166,7 +166,7 @@ public class SimpleAppendQueue<T> implements Queue<T> {
    * @see com.xmlcalabash.stream.util.shared.IQuixEventQueue#registerReader()
    */
   @Override
-  public Stream<T> registerReader() {
+  public IStream<T> registerReader() {
     // if (startWorking) throw new RuntimeException("Cannot register reader after the queue already been fed");
     if (DEBUG) System.out.println("CreateSimpleQEQ (open reader "+readerCount+") : " + rank);
     readerCount++;

@@ -20,7 +20,7 @@ package com.quixpath.internal.interfaces.impl;
 
 import innovimax.quixproc.datamodel.MatchEvent;
 import innovimax.quixproc.datamodel.QuixEvent;
-import innovimax.quixproc.datamodel.Stream;
+import innovimax.quixproc.datamodel.IStream;
 import net.sf.saxon.s9api.Processor;
 
 import com.quixpath.exceptions.QuiXPathException;
@@ -34,7 +34,7 @@ import com.quixpath.interfaces.IQuiXPathExpression;
 public abstract class AbstractQuiXPathExpression implements IQuiXPathExpression {
 
 	@Override
-	public abstract Stream<MatchEvent> update(QuixEvent event)
+	public abstract IStream<MatchEvent> update(QuixEvent event)
 			throws QuiXPathException;
 
 	// As far as possible, an application should instantiate a single Processor.

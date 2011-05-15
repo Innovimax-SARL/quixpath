@@ -22,7 +22,7 @@ import innovimax.quixproc.datamodel.ConvertException;
 import innovimax.quixproc.datamodel.DOMConverter;
 import innovimax.quixproc.datamodel.MatchEvent;
 import innovimax.quixproc.datamodel.QuixEvent;
-import innovimax.quixproc.datamodel.Stream;
+import innovimax.quixproc.datamodel.IStream;
 import innovimax.quixproc.datamodel.shared.SmartAppendQueue;
 
 import java.util.ArrayList;
@@ -57,7 +57,7 @@ public class IncompatibleWithFXPExpression extends AbstractQuiXPathExpression {
 	private List<QuixEvent> buffer;
 
 	@Override
-	public Stream<MatchEvent> update(QuixEvent event) throws QuiXPathException {
+	public IStream<MatchEvent> update(QuixEvent event) throws QuiXPathException {
 		fireWrite(null);
 		if (buffer != null) {
 			buffer.add(event);
@@ -73,7 +73,7 @@ public class IncompatibleWithFXPExpression extends AbstractQuiXPathExpression {
 				final XdmValue values = evaluator.evaluate();
 				final XdmSequenceIterator it = values.iterator();
 				final SmartAppendQueue<MatchEvent> doc = new SmartAppendQueue<MatchEvent>();
-				final Stream<MatchEvent> stream = doc.registerReader();
+				final IStream<MatchEvent> stream = doc.registerReader();
 				final MyEventConverter eventConverter = new MyEventConverter(
 						doc, node, it);
 				eventConverter.run();
@@ -90,9 +90,9 @@ public class IncompatibleWithFXPExpression extends AbstractQuiXPathExpression {
 		return emptyStream();
 	}
 
-	private Stream<MatchEvent> asSequence(
-			final Stream<MatchEvent> withoutSequence) {
-		return new Stream<MatchEvent>() {
+	private IStream<MatchEvent> asSequence(
+			final IStream<MatchEvent> withoutSequence) {
+		return new IStream<MatchEvent>() {
 
 			// true iff startSequence has been send on the stream
 			private boolean startSequence = false;
@@ -136,13 +136,13 @@ public class IncompatibleWithFXPExpression extends AbstractQuiXPathExpression {
 
 	private XdmNode getContextItem() throws ConvertException {
 		final DocumentBuilder db = processor().newDocumentBuilder();
-		final Stream<QuixEvent> reader = bufferReader();
+		final IStream<QuixEvent> reader = bufferReader();
 		final DOMConverter converter = new DOMConverter(db, reader);
 		return converter.exec();
 	}
 
-	private Stream<QuixEvent> bufferReader() {
-		return new Stream<QuixEvent>() {
+	private IStream<QuixEvent> bufferReader() {
+		return new IStream<QuixEvent>() {
 			Iterator<QuixEvent> it = buffer.iterator();
 
 			@Override
@@ -164,8 +164,8 @@ public class IncompatibleWithFXPExpression extends AbstractQuiXPathExpression {
 		};
 	}
 
-	private Stream<MatchEvent> emptyStream() {
-		return new Stream<MatchEvent>() {
+	private IStream<MatchEvent> emptyStream() {
+		return new IStream<MatchEvent>() {
 
 			@Override
 			public boolean hasNext() {
