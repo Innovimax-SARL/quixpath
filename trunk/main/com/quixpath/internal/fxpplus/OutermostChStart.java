@@ -3,12 +3,12 @@ package com.quixpath.internal.fxpplus;
 import fr.inria.lille.fxp.querylanguage.api.FXPFactory;
 import fr.inria.lille.fxp.querylanguage.api.IFXPTerm;
 
-/*package*/class OuttermostChStart extends AbstractTerm implements ITerm {
+/*package*/class OutermostChStart extends AbstractTerm implements ITerm {
 
 	private final String A;
 	private final ITerm F;
 
-	public OuttermostChStart(String a, ITerm f) {
+	public OutermostChStart(String a, ITerm f) {
 		super();
 		A = a;
 		F = f;

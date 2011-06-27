@@ -19,7 +19,7 @@ package com.quixpath.internal.fxpplus;
 	}
 
 	public boolean isOuterMost() {
-		return this instanceof OuttermostChStart;
+		return this instanceof OutermostChStart;
 	}
 
 	public boolean isElement() {
