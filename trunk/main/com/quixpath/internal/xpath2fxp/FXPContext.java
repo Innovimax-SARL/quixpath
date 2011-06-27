@@ -22,23 +22,29 @@ package com.quixpath.internal.xpath2fxp;
  * Immutable implementation of the context.
  * 
  */
-public class FXPContext implements IFXPContext {
+public class FXPContext implements IContext {
 
 	private final Node roots;
 	private final Node filters;
+	private final Node initialisation;
+	// Null = no value.s
+	private final String stringLitteralValue;
 
 	public FXPContext() {
-		this(init(), init());
+		this(init(), init(), init(), null);
 	}
 
 	private static Node init() {
 		return new Node(false, null);
 	}
 
-	private FXPContext(Node roots, Node filters) {
+	private FXPContext(Node roots, Node filters, Node initialisation,
+			String stringLitteralValue) {
 		super();
 		this.roots = roots;
 		this.filters = filters;
+		this.initialisation = initialisation;
+		this.stringLitteralValue = stringLitteralValue;
 		assert invariant1();
 		assert invariant2();
 	}
@@ -59,21 +65,21 @@ public class FXPContext implements IFXPContext {
 	public FXPContext enterFilter() {
 		Node f = new Node(true, filters);
 		Node r = new Node(false, roots);
-		return new FXPContext(r, f);
+		return new FXPContext(r, f, initialisation, stringLitteralValue);
 	}
 
 	@Override
 	public FXPContext exitFilter() {
 		Node f = filters.getNext();
 		Node r = roots.getNext();
-		return new FXPContext(r, f);
+		return new FXPContext(r, f, initialisation, stringLitteralValue);
 	}
 
 	@Override
 	public FXPContext setRoot(boolean root) {
 		Node f = filters;
 		Node r = new Node(root, roots.getNext());
-		return new FXPContext(r, f);
+		return new FXPContext(r, f, initialisation, stringLitteralValue);
 	}
 
 	// Invariants
@@ -88,6 +94,45 @@ public class FXPContext implements IFXPContext {
 
 	private boolean invariant2() {
 		return filters != null && roots != null;
+	}
+
+	@Override
+	public boolean isTrunk() {
+		return !isFilter();
+	}
+
+	@Override
+	public boolean isInitialisation() {
+		return initialisation.getValue();
+	}
+
+	@Override
+	public IContext newSteps() {
+		return new FXPContext(roots, filters, new Node(true, initialisation),
+				stringLitteralValue);
+	}
+
+	@Override
+	public IContext nextStep() {
+		return new FXPContext(roots, filters, initialisation.getNext(),
+				stringLitteralValue);
+	}
+
+	@Override
+	public boolean isStepsEqualsStringLitteral() {
+		return stringLitteralValue != null;
+	}
+
+	@Override
+	public IContext setStepsEqualsStringLitteral(String stringLitteralValue) {
+		return new FXPContext(roots, filters, initialisation,
+				stringLitteralValue);
+
+	}
+
+	@Override
+	public String getStepsEqualsStringLitteral() {
+		return stringLitteralValue;
 	}
 
 }

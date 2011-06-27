@@ -18,12 +18,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package com.quixpath.internal.events;
 
-import fr.inria.mostrare.evoxs.pub.EventFactory;
-import fr.inria.mostrare.evoxs.pub.IEvoxsEvent;
+import fr.inria.lille.fxp.datamodel.api.EventFactory;
+import fr.inria.lille.fxp.datamodel.api.IFXPEvent;
 import innovimax.quixproc.datamodel.QuixEvent;
 import innovimax.quixproc.datamodel.QuixEvent.Attribute;
 import innovimax.quixproc.datamodel.QuixEvent.EndElement;
 import innovimax.quixproc.datamodel.QuixEvent.StartElement;
+import innovimax.quixproc.datamodel.QuixEvent.Text;
 
 import java.util.Iterator;
 import java.util.Stack;
@@ -47,27 +48,35 @@ public class QuiXPathEventFactory implements IEventConverter {
 		if (event.isStartElement()) {
 			StartElement sEvent = event.asStartElement();
 			String label = sEvent.getLocalName();
-			IEvoxsEvent evoxsEvent = EventFactory.makeOpenElementEvent(label,
+			IFXPEvent fxpEvent = EventFactory.makeOpenElementEvent(label,
 					nextId);
 			stack.push(nextId++);
-			return toIterable(new FxpCompatibleEvent(event, evoxsEvent));
+			return toIterable(new FxpCompatibleEvent(event, fxpEvent));
 		}
 		if (event.isEndElement()) {
 			final EndElement sEvent = event.asEndElement();
 			final String label = sEvent.getLocalName();
-			final IEvoxsEvent evoxsEvent = EventFactory.makeCloseElementEvent(
+			final IFXPEvent fxpEvent = EventFactory.makeCloseElementEvent(
 					label, stack.pop());
-			return toIterable(new FxpCompatibleEvent(event, evoxsEvent));
+			return toIterable(new FxpCompatibleEvent(event, fxpEvent));
+		}
+		if (event.isText()) {
+			final Text tEvent = event.asText();
+			final IFXPEvent fxpEvent = EventFactory.makeTextEvent(nextId++);
+			final FxpCompatibleEvent e1 = new FxpCompatibleEvent(tEvent,
+					fxpEvent);
+			final FxpCompatibleEvent e2 = new FxpCompatibleEvent(null,
+					EventFactory.makeDataEvent(tEvent.getData()), true);
+			return toIterable(e1, e2);
 		}
 		if (event.isAttribute()) {
 			final Attribute attribute = event.asAttribute();
 			final String label = attribute.getLocalName();
-			final Iterable<IQuixPathEvent> res = toIterable(
-					new FxpCompatibleEvent(event, EventFactory
-							.makeOpenAttributeEvent(label, nextId)),
-					new FxpCompatibleEvent(null, EventFactory
-							.makeCloseAttributeEvent(label, nextId)));
-			nextId++;
+			final FxpCompatibleEvent e1 = new FxpCompatibleEvent(event,
+					EventFactory.makeAttributeEvent(label, nextId++));
+			final FxpCompatibleEvent e2 = new FxpCompatibleEvent(null,
+					EventFactory.makeDataEvent(attribute.getValue()), true);
+			final Iterable<IQuixPathEvent> res = toIterable(e1, e2);
 			return res;
 		}
 		if (event.isStartDocument()) {

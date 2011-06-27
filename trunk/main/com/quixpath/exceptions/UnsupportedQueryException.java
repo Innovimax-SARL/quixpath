@@ -30,6 +30,10 @@ public class UnsupportedQueryException extends QuiXPathException {
 		super();
 	}
 
+	public UnsupportedQueryException(String message) {
+		super(message);
+	}
+
 	public UnsupportedQueryException(Exception cause) {
 		super(cause);
 	}

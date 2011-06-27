@@ -26,31 +26,57 @@ package com.quixpath.internal.xpath2fxp;
  * information on the notion of sub-queries.
  * 
  */
-public interface IFXPContext {
+/* package */interface IContext {
 
 	/**
 	 * True iff the fxp sub-query is evaluated from the root of the document.
 	 */
+	// TODO is absolute query / is relative query.
 	public boolean isRooted();
 
 	/**
-	 * True iff the fxp sub-query is a term of a filter.
+	 * true iff the current position in the XPath AST is on the filter of the
+	 * query.
 	 */
 	public boolean isFilter();
 
 	/**
 	 * Start to translate a filter.
 	 */
-	public FXPContext enterFilter();
+	public IContext enterFilter();
 
 	/**
 	 * End to translate a filter.
 	 */
-	public FXPContext exitFilter();
+	public IContext exitFilter();
 
 	/**
 	 * Set information about a root.
 	 */
-	public FXPContext setRoot(boolean root);
+	public IContext setRoot(boolean root);
+
+	/**
+	 * true iff the current position in the XPath AST is on the trunk of the
+	 * query.
+	 */
+	public boolean isTrunk();
+
+	/**
+	 * Steps ::= Steps / Step
+	 * 
+	 * true iff the current position in the XPath AST is on the last step on the
+	 * recursion. In this case, the translation will be initialised.
+	 */
+	public boolean isInitialisation();
+
+	public IContext newSteps();
+
+	public IContext nextStep();
+
+	public boolean isStepsEqualsStringLitteral();
+
+	public IContext setStepsEqualsStringLitteral(String stringLitteralValue);
+
+	public String getStepsEqualsStringLitteral();
 
 }

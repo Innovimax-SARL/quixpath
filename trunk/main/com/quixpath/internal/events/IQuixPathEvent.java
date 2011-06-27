@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package com.quixpath.internal.events;
 
-import fr.inria.mostrare.evoxs.pub.IEvoxsEvent;
+import fr.inria.lille.fxp.datamodel.api.IFXPEvent;
 import innovimax.quixproc.datamodel.MatchEvent;
 import innovimax.quixproc.datamodel.QuixEvent;
 
@@ -33,10 +33,10 @@ public interface IQuixPathEvent {
 	/**
 	 * 
 	 * The returned value can be null. This indicate that a QuixEvent is
-	 * associated to many EvoxsEvent. The mapping from QuixEvent and EvoxsEvent
-	 * is store is another IQuixPathEvent.
+	 * associated to many fxpEvent. The mapping from QuixEvent and fxpEvent is
+	 * store is another IQuixPathEvent.
 	 * 
-	 * TODO In this case all the EvoxsEvents have the same nodeId?
+	 * TODO In this case all the fxpEvents have the same nodeId?
 	 * 
 	 * @return the QuixEvent associated to this QuixPathEvent
 	 */
@@ -49,7 +49,7 @@ public interface IQuixPathEvent {
 	 * 
 	 * @return the QuixEvent associated to this QuixPathEvent
 	 */
-	public IEvoxsEvent getEvoxsEvent();
+	public IFXPEvent getFxpEvent();
 
 	/**
 	 * Convert the QuixEvent to the corresponding MatchEvent.

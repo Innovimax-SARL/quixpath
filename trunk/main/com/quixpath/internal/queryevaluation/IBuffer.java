@@ -18,8 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package com.quixpath.internal.queryevaluation;
 
-import innovimax.quixproc.datamodel.MatchEvent;
 import innovimax.quixproc.datamodel.IStream;
+import innovimax.quixproc.datamodel.MatchEvent;
 
 import com.quixpath.internal.events.IQuixPathEvent;
 import com.quixpath.internal.mvc.listeners.IBufferListener;

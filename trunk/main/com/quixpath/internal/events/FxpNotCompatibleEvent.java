@@ -20,12 +20,12 @@ package com.quixpath.internal.events;
 
 import innovimax.quixproc.datamodel.MatchEvent;
 import innovimax.quixproc.datamodel.QuixEvent;
-import fr.inria.mostrare.evoxs.event.INamedEvent;
+import fr.inria.lille.fxp.datamodel.internal.event.INamedEvent;
 
 /*package*/class FxpNotCompatibleEvent extends AbstractQuixPathEvent {
 
 	@Override
-	public INamedEvent getEvoxsEvent() {
+	public INamedEvent getFxpEvent() {
 		return null;
 	}
 
