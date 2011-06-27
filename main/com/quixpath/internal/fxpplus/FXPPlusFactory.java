@@ -58,7 +58,7 @@ public class FXPPlusFactory implements IFXPPlusFactory {
 
 	@Override
 	public ITerm outermostChStart(String a, ITerm F) {
-		return new OuttermostChStart(a, F);
+		return new OutermostChStart(a, F);
 	}
 
 	@Override
