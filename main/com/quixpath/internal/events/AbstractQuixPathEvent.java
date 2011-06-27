@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package com.quixpath.internal.events;
 
-import fr.inria.mostrare.evoxs.pub.IEvoxsEvent;
+import fr.inria.lille.fxp.datamodel.api.IFXPEvent;
 import innovimax.quixproc.datamodel.MatchEvent;
 import innovimax.quixproc.datamodel.QuixEvent;
 
@@ -39,7 +39,7 @@ public abstract class AbstractQuixPathEvent implements IQuixPathEvent {
 		return quixEvent;
 	}
 
-	public abstract IEvoxsEvent getEvoxsEvent();
+	public abstract IFXPEvent getFxpEvent();
 
 	public abstract MatchEvent toMatchEvent();
 

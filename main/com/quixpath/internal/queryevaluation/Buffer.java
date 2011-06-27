@@ -18,8 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package com.quixpath.internal.queryevaluation;
 
-import innovimax.quixproc.datamodel.MatchEvent;
 import innovimax.quixproc.datamodel.IStream;
+import innovimax.quixproc.datamodel.MatchEvent;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -90,6 +90,15 @@ public class Buffer implements IBuffer {
 		for (IBufferListener listener : listeners) {
 			listener.write(event);
 		}
+	}
+
+	@Override
+	public String toString() {
+		final StringBuffer res = new StringBuffer();
+		for (final IQuixPathEvent event : buffer) {
+			res.append(event.getFxpEvent() + ", ");
+		}
+		return res.toString();
 	}
 
 	private final List<IBufferListener> listeners;

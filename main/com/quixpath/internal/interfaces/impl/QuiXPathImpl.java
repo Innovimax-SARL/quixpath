@@ -18,9 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package com.quixpath.internal.interfaces.impl;
 
+import innovimax.quixproc.datamodel.IStream;
 import innovimax.quixproc.datamodel.MatchEvent;
 import innovimax.quixproc.datamodel.QuixEvent;
-import innovimax.quixproc.datamodel.IStream;
 
 import javax.xml.xpath.XPathExpressionException;
 
@@ -32,11 +32,11 @@ import com.quixpath.interfaces.IQuiXPath;
 import com.quixpath.interfaces.IQuiXPathExpression;
 import com.quixpath.internal.xpath2fxp.XPath2FXP;
 
-import fr.inria.mostrare.evoxs.processor.EnumerationHandler;
-import fr.inria.mostrare.evoxs.pub.handlerFactory.Algorithm;
-import fr.inria.mostrare.evoxs.pub.handlerFactory.EnumerationHandlerFactory;
-import fr.inria.mostrare.xpath.exception.DSTABuildingException;
-import fr.inria.mostrare.xpath.pub.IFXPTerm;
+import fr.inria.lille.fxp.queryengine.api.Algorithm;
+import fr.inria.lille.fxp.queryengine.api.EnumerationHandlerFactory;
+import fr.inria.lille.fxp.queryengine.internal.sta.EnumerationHandler;
+import fr.inria.lille.fxp.querylanguage.api.DSTABuildingException;
+import fr.inria.lille.fxp.querylanguage.api.IFXPTerm;
 
 public class QuiXPathImpl implements IQuiXPath {
 

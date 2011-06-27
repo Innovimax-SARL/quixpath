@@ -20,9 +20,9 @@ package com.quixpath.internal.interfaces.impl;
 
 import innovimax.quixproc.datamodel.ConvertException;
 import innovimax.quixproc.datamodel.DOMConverter;
+import innovimax.quixproc.datamodel.IStream;
 import innovimax.quixproc.datamodel.MatchEvent;
 import innovimax.quixproc.datamodel.QuixEvent;
-import innovimax.quixproc.datamodel.IStream;
 import innovimax.quixproc.datamodel.shared.SmartAppendQueue;
 
 import java.util.ArrayList;

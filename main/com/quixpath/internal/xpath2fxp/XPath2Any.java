@@ -25,42 +25,47 @@ import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XPathCompiler;
 import net.sf.saxon.s9api.XPathExecutable;
 
+import com.quixpath.internal.fxpplus.FXPPlusFactory;
+import com.quixpath.internal.fxpplus.IFXPPlusFactory;
 import com.quixpath.internal.interfaces.impl.AbstractQuiXPathExpression;
 
 public class XPath2Any {
-  // SAXON representation of the query
-  // TODO find a description of this representation.
-  protected final XPathExecutable xPathExecutable;
-  protected/* final */NamePool namePool;
-  
-  /**
-   * 
-   * 
-   * @param query
-   *            String version of the XPath query.
-   * @throws XPathExpressionException
-   *             when SAXON can not parse the query.
-   */
-  public XPath2Any(final String query) throws XPathExpressionException {
-      final XPathCompiler compiler = AbstractQuiXPathExpression.processor()
-              .newXPathCompiler();
-      try {
-          xPathExecutable = compiler.compile(query);
-      } catch (SaxonApiException e) {
-          throw new XPathExpressionException(e);
-      }
+	// SAXON representation of the query
+	// TODO find a description of this representation.
+	protected final XPathExecutable xPathExecutable;
+	protected/* final */NamePool namePool;
 
-  }
+	protected final IFXPPlusFactory factory;
+	protected final String xPathQuery;
 
+	/**
+	 * 
+	 * 
+	 * @param query
+	 *            String version of the XPath query.
+	 * @throws XPathExpressionException
+	 *             when SAXON can not parse the query.
+	 */
+	public XPath2Any(final String query) throws XPathExpressionException {
+		final XPathCompiler compiler = AbstractQuiXPathExpression.processor()
+				.newXPathCompiler();
+		try {
+			xPathExecutable = compiler.compile(query);
+		} catch (SaxonApiException e) {
+			throw new XPathExpressionException(e);
+		}
+		factory = FXPPlusFactory.newInstance();
+		xPathQuery = query;
+	}
 
-  /**
-   * 
-   * Return null if Saxon fails to parse the query.
-   * 
-   * @return
-   */
-  public XPathExecutable getXPathExecutable() {
-      return xPathExecutable;
-  }
+	/**
+	 * 
+	 * Return null if Saxon fails to parse the query.
+	 * 
+	 * @return
+	 */
+	public XPathExecutable getXPathExecutable() {
+		return xPathExecutable;
+	}
 
 }

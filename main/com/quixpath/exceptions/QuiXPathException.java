@@ -31,6 +31,10 @@ public class QuiXPathException extends Exception {
 		super();
 	}
 
+	public QuiXPathException(String message) {
+		super(message);
+	}
+
 	public QuiXPathException(Error cause) {
 		super(cause);
 	}

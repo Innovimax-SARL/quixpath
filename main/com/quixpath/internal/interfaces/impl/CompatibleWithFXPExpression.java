@@ -18,9 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package com.quixpath.internal.interfaces.impl;
 
+import innovimax.quixproc.datamodel.IStream;
 import innovimax.quixproc.datamodel.MatchEvent;
 import innovimax.quixproc.datamodel.QuixEvent;
-import innovimax.quixproc.datamodel.IStream;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,12 +38,13 @@ import com.quixpath.internal.queryevaluation.Buffer;
 import com.quixpath.internal.queryevaluation.IBuffer;
 import com.quixpath.internal.xpath2fxp.XPath2FXP;
 
-import fr.inria.mostrare.evoxs.event.Action;
-import fr.inria.mostrare.evoxs.event.INamedEvent;
-import fr.inria.mostrare.evoxs.processor.EnumerationHandler;
-import fr.inria.mostrare.evoxs.pub.IEvoxsEvent;
-import fr.inria.mostrare.evoxs.pub.IUpdates;
-import fr.inria.mostrare.xpath.pub.IFXPTerm;
+import fr.inria.lille.fxp.datamodel.api.IFXPEvent;
+import fr.inria.lille.fxp.datamodel.api.IUpdates;
+import fr.inria.lille.fxp.datamodel.internal.event.Action;
+import fr.inria.lille.fxp.datamodel.internal.event.IElementEvent;
+import fr.inria.lille.fxp.datamodel.internal.event.ISelectableEvent;
+import fr.inria.lille.fxp.queryengine.internal.sta.EnumerationHandler;
+import fr.inria.lille.fxp.querylanguage.api.IFXPTerm;
 
 /**
  * Compile representation of a query that is compatible with FXP.
@@ -81,6 +82,10 @@ import fr.inria.mostrare.xpath.pub.IFXPTerm;
 	private Map<Integer, IQuixPathEvent> openMap;
 	// NodeId -> IQuixPathEvent where the type is CLOSE
 	private Map<Integer, IQuixPathEvent> closeMap;
+	// NodeId -> IQuixPathEvent where the event has OPEN/CLOSE tags (attribute,
+	// text...)
+	private Map<Integer, IQuixPathEvent> otherMap;
+
 	// nodeId is in reject iff the node is selected and the corresponding close
 	// event in not in buffer
 	// It will come in the future.
@@ -109,6 +114,7 @@ import fr.inria.mostrare.xpath.pub.IFXPTerm;
 		}
 		openMap = new HashMap<Integer, IQuixPathEvent>();
 		closeMap = new HashMap<Integer, IQuixPathEvent>();
+		otherMap = new HashMap<Integer, IQuixPathEvent>();
 		rejects = new HashSet<Integer>();
 		selects = new HashSet<Integer>();
 		eventFactory = QuiXPathEventFactory.newInstance();
@@ -127,15 +133,18 @@ import fr.inria.mostrare.xpath.pub.IFXPTerm;
 		for (final IQuixPathEvent quixPathEvent : quixPathEvents) {
 			buffer.write(quixPathEvent);
 
-			final IEvoxsEvent evoxsEvent = quixPathEvent.getEvoxsEvent();
-			if (evoxsEvent != null) {
-				if (rejects.remove(evoxsEvent.getNodeId())) {
-					quixPathEvent.reject();
-				} else if (selects.remove(evoxsEvent.getNodeId())) {
-					quixPathEvent.select();
-				} else if (allReject) {
-					quixPathEvent.reject();
-					return buffer.read();
+			final IFXPEvent fxpEvent = quixPathEvent.getFxpEvent();
+			if (fxpEvent instanceof ISelectableEvent) {
+				final ISelectableEvent selectableFxpEvent = (ISelectableEvent) fxpEvent;
+				if (selectableFxpEvent != null) {
+					if (rejects.remove(selectableFxpEvent.getNodeId())) {
+						quixPathEvent.reject();
+					} else if (selects.remove(selectableFxpEvent.getNodeId())) {
+						quixPathEvent.select();
+					} else if (allReject) {
+						quixPathEvent.reject();
+						return buffer.read();
+					}
 				}
 			}
 			update(quixPathEvent);
@@ -166,15 +175,23 @@ import fr.inria.mostrare.xpath.pub.IFXPTerm;
 	private boolean allReject = false;
 
 	private void update(final IQuixPathEvent event) {
-		final INamedEvent evoxsEvent = (INamedEvent) event.getEvoxsEvent();
-		if (evoxsEvent != null) {
-			if (evoxsEvent.getAction() == Action.OPEN) {
-				openMap.put(evoxsEvent.getNodeId(), event);
+		IFXPEvent fxpEvent = event.getFxpEvent();
+		if (fxpEvent != null) {
+			if (fxpEvent instanceof IElementEvent) {
+				final IElementEvent fxpElementEvent = (IElementEvent) fxpEvent;
+				if (fxpElementEvent.getAction() == Action.OPEN) {
+					openMap.put(fxpElementEvent.getNodeId(), event);
+				}
+				if (fxpElementEvent.getAction() == Action.CLOSE) {
+					closeMap.put(fxpElementEvent.getNodeId(), event);
+				}
+			} else {
+				if (fxpEvent instanceof ISelectableEvent) {
+					otherMap.put(((ISelectableEvent) fxpEvent).getNodeId(),
+							event);
+				}
 			}
-			if (evoxsEvent.getAction() == Action.CLOSE) {
-				closeMap.put(evoxsEvent.getNodeId(), event);
-			}
-			final IUpdates updates = handler.update(evoxsEvent);
+			final IUpdates updates = handler.update(fxpEvent);
 			for (final Map<String, Integer> assignment : updates
 					.rejectAssignments()) {
 				assert assignment.keySet().size() == 1; // monadic query
@@ -184,22 +201,26 @@ import fr.inria.mostrare.xpath.pub.IFXPTerm;
 					allReject = true;
 				} else {
 					reject(openMap, nodeId);
+					reject(otherMap, nodeId);
 				}
 				// It could be that the CLOSE event is not yet on map.
 				if (!reject(closeMap, nodeId)) {
 					rejects.add(nodeId);
 				}
 			}
+
 			for (final Map<String, Integer> assignment : updates
 					.selectAssignments()) {
 				assert assignment.keySet().size() == 1;
 				final Integer nodeId = assignment
 						.get(XPath2FXP.SELECTING_VARIABLE_NAME);
 				select(openMap, nodeId);
+				select(otherMap, nodeId);
 				if (!select(closeMap, nodeId)) {
 					selects.add(nodeId);
 				}
 			}
+
 		}
 	}
 

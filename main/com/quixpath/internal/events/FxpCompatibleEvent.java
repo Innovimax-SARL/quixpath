@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package com.quixpath.internal.events;
 
-import fr.inria.mostrare.evoxs.pub.IEvoxsEvent;
+import fr.inria.lille.fxp.datamodel.api.IFXPEvent;
 import innovimax.quixproc.datamodel.MatchEvent;
 import innovimax.quixproc.datamodel.QuixEvent;
 
@@ -28,31 +28,31 @@ import innovimax.quixproc.datamodel.QuixEvent;
  */
 /* package */class FxpCompatibleEvent extends AbstractQuixPathEvent {
 
-	/* package */FxpCompatibleEvent(QuixEvent quixEvent, IEvoxsEvent evoxsEvent) {
-		this(quixEvent, evoxsEvent, false, false);
+	/* package */FxpCompatibleEvent(QuixEvent quixEvent, IFXPEvent fxpEvent) {
+		this(quixEvent, fxpEvent, false, false);
 	}
 
-	/* package */FxpCompatibleEvent(QuixEvent quixEvent,
-			IEvoxsEvent evoxsEvent, boolean output) {
-		this(quixEvent, evoxsEvent, output, false);
-		assert evoxsEvent != null;
+	/* package */FxpCompatibleEvent(QuixEvent quixEvent, IFXPEvent fxpEvent,
+			boolean output) {
+		this(quixEvent, fxpEvent, output, false);
+		assert fxpEvent != null;
 	}
 
-	private FxpCompatibleEvent(QuixEvent quixEvent, IEvoxsEvent evoxsEvent,
+	private FxpCompatibleEvent(QuixEvent quixEvent, IFXPEvent fxpEvent,
 			boolean output, boolean matched) {
 		super(quixEvent);
-		this.evoxsEvent = evoxsEvent;
+		this.fxpEvent = fxpEvent;
 		this.output = output;
 		this.matched = matched;
 	}
 
-	private final IEvoxsEvent evoxsEvent;
+	private final IFXPEvent fxpEvent;
 	private boolean matched;
 	private boolean output;
 
 	@Override
-	public IEvoxsEvent getEvoxsEvent() {
-		return evoxsEvent;
+	public IFXPEvent getFxpEvent() {
+		return fxpEvent;
 	}
 
 	@Override
