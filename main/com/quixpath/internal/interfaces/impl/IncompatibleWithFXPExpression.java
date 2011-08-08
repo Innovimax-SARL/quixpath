@@ -23,6 +23,7 @@ import innovimax.quixproc.datamodel.DOMConverter;
 import innovimax.quixproc.datamodel.IStream;
 import innovimax.quixproc.datamodel.MatchEvent;
 import innovimax.quixproc.datamodel.QuixEvent;
+import innovimax.quixproc.datamodel.QuixException;
 import innovimax.quixproc.datamodel.shared.SmartAppendQueue;
 
 import java.util.ArrayList;
@@ -102,7 +103,7 @@ public class IncompatibleWithFXPExpression extends AbstractQuiXPathExpression {
 			private boolean sendEndSequence = false;
 
 			@Override
-			public MatchEvent next() {
+			public MatchEvent next() throws QuixException {
 				if (!startSequence) {
 					startSequence = true;
 					return new MatchEvent(QuixEvent.getStartSequence(), false);
@@ -135,6 +136,7 @@ public class IncompatibleWithFXPExpression extends AbstractQuiXPathExpression {
 	}
 
 	private XdmNode getContextItem() throws ConvertException {
+	    //System.out.println("getContextItem");
 		final DocumentBuilder db = processor().newDocumentBuilder();
 		final IStream<QuixEvent> reader = bufferReader();
 		final DOMConverter converter = new DOMConverter(db, reader);
