@@ -39,6 +39,8 @@ public abstract class AbstractQuiXPathExpression implements IQuiXPathExpression 
 
 	// As far as possible, an application should instantiate a single Processor.
 	private static Processor processor;
+	// Moz : Added to work with QuiXProc
+	public static void setProcessor(Processor _processor) { processor = _processor; }
 
 	/**
 	 * 
