@@ -1,6 +1,6 @@
 /*
 QuiXPath: efficient evaluation of XPath queries on XML streams.
-Copyright (C) 2011 Innovimax and INRIA
+Copyright (C) 2009-2012 Innovimax and INRIA
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -101,6 +101,12 @@ public class QuiXPathImpl implements IQuiXPath {
 	public QuixValue evaluate(IQuiXPathExpression expression,
 			IStream<QuixEvent> stream) throws QuiXPathException {
 		return expression.evaluate(stream);
+	}
+
+	@Override
+	public IQuiXPathExpression compile(String xpathQuery,
+			IStaticContext staticContext) throws UnsupportedQueryException {
+		return compile(xpathQuery, staticContext, true);
 	}
 
 }
