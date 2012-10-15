@@ -18,14 +18,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package com.quixpath.exceptions;
 
-import innovimax.quixproc.datamodel.QuixException;
+import net.sf.saxon.trans.XPathException;
 
 /**
  * Thrown when quixpath is not able to compile or to evaluate a query.
  * 
  * It is (very often) used as a wrapper for SAXON or FXP exceptions.
  */
-public class QuiXPathException extends QuixException {
+public class QuiXPathException extends Exception {
 
 	private static final long serialVersionUID = -9106541275094668760L;
 
@@ -43,6 +43,14 @@ public class QuiXPathException extends QuixException {
 
 	public QuiXPathException(Exception cause) {
 		super(cause);
+	}
+
+	public QuiXPathException(XPathException cause, String message) {
+		super(message, cause);
+	}
+
+	public QuiXPathException(Throwable cause, String message) {
+		super(message, cause);
 	}
 
 }

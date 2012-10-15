@@ -18,6 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package com.quixpath.exceptions;
 
+import net.sf.saxon.trans.XPathException;
+
+import com.quixpath.internal.fxpplus.ITerm;
+
 /**
  * Thrown when the quixpath compiler is not able to compile an XPath Query into
  * an FXPTerm.
@@ -40,6 +44,18 @@ public class UnsupportedQueryException extends QuiXPathException {
 
 	public UnsupportedQueryException(Error cause) {
 		super(cause);
+	}
+
+	public UnsupportedQueryException(String xPathQuery, ITerm subQuery) {
+		super(xPathQuery);
+	}
+
+	public UnsupportedQueryException(XPathException cause, String xPathQuery) {
+		super(cause, xPathQuery);
+	}
+
+	public UnsupportedQueryException(Throwable cause, String xPathQuery) {
+		super(cause, xPathQuery);
 	}
 
 }

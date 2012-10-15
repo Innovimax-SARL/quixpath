@@ -21,13 +21,16 @@ package com.quixpath.internal.xpath2fxp;
 import javax.xml.xpath.XPathExpressionException;
 
 import net.sf.saxon.om.NamePool;
+import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XPathCompiler;
 import net.sf.saxon.s9api.XPathExecutable;
 
+import com.quixpath.interfaces.context.IStaticContext;
 import com.quixpath.internal.fxpplus.FXPPlusFactory;
 import com.quixpath.internal.fxpplus.IFXPPlusFactory;
 import com.quixpath.internal.interfaces.impl.AbstractQuiXPathExpression;
+import com.quixpath.internal.interfaces.impl.count.IOperator;
 
 public class XPath2Any {
 	// SAXON representation of the query
@@ -46,16 +49,44 @@ public class XPath2Any {
 	 * @throws XPathExpressionException
 	 *             when SAXON can not parse the query.
 	 */
-	public XPath2Any(final String query) throws XPathExpressionException {
-		final XPathCompiler compiler = AbstractQuiXPathExpression.processor()
-				.newXPathCompiler();
+	public XPath2Any(final String query, final IStaticContext staticContext)
+			throws XPathExpressionException {
+		final Processor processor = AbstractQuiXPathExpression.processor();
+
+		final XPathCompiler compiler = processor.newXPathCompiler();
 		try {
+			if (staticContext != null) {
+				for (String prefix : staticContext.getPrefixes()) {
+					compiler.declareNamespace(prefix,
+							staticContext.getNamespaceURI(prefix));
+				}
+			}
 			xPathExecutable = compiler.compile(query);
 		} catch (SaxonApiException e) {
 			throw new XPathExpressionException(e);
 		}
 		factory = FXPPlusFactory.newInstance();
 		xPathQuery = query;
+
+	}
+
+	protected boolean countAtTopLevel = false;
+
+	public boolean isCountintAtTopLevel() {
+		assert !countAtTopLevel || !isCounting();
+		return countAtTopLevel;
+	}
+
+	// value = null <-> the query does not handle a count operator.
+	protected IOperator operator = null;
+
+	public IOperator getOperator() {
+		return operator;
+	}
+
+	public boolean isCounting() {
+		assert operator == null || !countAtTopLevel;
+		return operator != null;
 	}
 
 	/**

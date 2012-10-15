@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package com.quixpath.internal.mvc.listeners;
 
-import com.quixpath.internal.events.IQuixPathEvent;
+import innovimax.quixproc.datamodel.QuixEvent;
 
 public interface IBufferListener {
 
@@ -27,7 +27,7 @@ public interface IBufferListener {
 	 * 
 	 * @param event
 	 */
-	public void read(IQuixPathEvent event);
+	public void read(QuixEvent event);
 
 	/**
 	 * Invoke when an event is written in the buffer
@@ -36,6 +36,6 @@ public interface IBufferListener {
 	 * 
 	 * @param event
 	 */
-	public void write(IQuixPathEvent event);
+	public void write(QuixEvent event);
 
 }

@@ -21,6 +21,9 @@ package com.quixpath.internal.interfaces.impl;
 import innovimax.quixproc.datamodel.MatchEvent;
 import innovimax.quixproc.datamodel.QuixEvent;
 import innovimax.quixproc.datamodel.shared.ISimpleQueue;
+
+import java.net.URI;
+
 import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
@@ -81,7 +84,9 @@ public class MyEventConverter implements Runnable {
 			current = it.next();
 		}
 		final boolean match = computeMatch(node);
-		String uri = "" + node.getDocumentURI();
+		final URI documentURI = node.getDocumentURI();
+		final String uri = documentURI == null ? "" : node.getDocumentURI()
+				.toString();
 		doc.append(new MatchEvent(QuixEvent.getStartDocument(uri), match));
 		processnode(node);
 		doc.append(new MatchEvent(QuixEvent.getEndDocument(uri), match));
@@ -158,7 +163,9 @@ public class MyEventConverter implements Runnable {
 					.getLocalName(), localnode.getStringValue()), match));
 			break;
 		case NAMESPACE:
-			// TODO
+			doc.append(new MatchEvent(QuixEvent.getNamespace(localnode
+					.getNodeName().getPrefix(), localnode.getNodeName()
+					.getNamespaceURI()), match));
 			break;
 		}
 	}

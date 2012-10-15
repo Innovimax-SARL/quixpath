@@ -20,8 +20,8 @@ package com.quixpath.internal.queryevaluation;
 
 import innovimax.quixproc.datamodel.IStream;
 import innovimax.quixproc.datamodel.MatchEvent;
+import innovimax.quixproc.datamodel.QuixEvent;
 
-import com.quixpath.internal.events.IQuixPathEvent;
 import com.quixpath.internal.mvc.listeners.IBufferListener;
 
 /**
@@ -55,8 +55,10 @@ public interface IBuffer {
 
 	public IStream<MatchEvent> read();
 
-	public void write(IQuixPathEvent event);
+	public void write(QuixEvent quixEvent, Integer nodeId, boolean reject);
 
 	public void addListerner(IBufferListener listener);
+
+	public boolean isEmpty();
 
 }

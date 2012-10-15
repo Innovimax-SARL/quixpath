@@ -1,3 +1,21 @@
+/*
+QuiXPath: efficient evaluation of XPath queries on XML streams.
+Copyright (C) 2011 Innovimax and INRIA
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 3
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
 package com.quixpath.internal.fxpplus;
 
 public class FXPPlusFactory implements IFXPPlusFactory {
@@ -7,11 +25,11 @@ public class FXPPlusFactory implements IFXPPlusFactory {
 	}
 
 	@Override
-	public ITerm label(String A, ITerm F) {
+	public ITerm label(String uri, String A, ITerm F) {
 		if (F.isLocal()) {
-			return localAnd(new LocalLabel(A), (ILocal) F);
+			return localAnd(new LocalLabel(uri, A), (ILocal) F);
 		}
-		return new Label(A, F);
+		return new Label(uri, A, F);
 	}
 
 	@Override
@@ -32,6 +50,17 @@ public class FXPPlusFactory implements IFXPPlusFactory {
 	}
 
 	@Override
+	public ITerm or(ITerm F1, ITerm F2) {
+		if (F1 instanceof TrueQuery) {
+			return F1;
+		}
+		if (F2 instanceof TrueQuery) {
+			return F2;
+		}
+		return new Or(F1, F2);
+	}
+
+	@Override
 	public ITerm not(ITerm F) {
 		return new Not(F);
 	}
@@ -42,7 +71,7 @@ public class FXPPlusFactory implements IFXPPlusFactory {
 	}
 
 	@Override
-	public ITerm chithElement(int i, ITerm F) {
+	public ITerm chithElement(long i, ITerm F) {
 		return new ChithElement(i, F);
 	}
 
@@ -53,17 +82,17 @@ public class FXPPlusFactory implements IFXPPlusFactory {
 
 	@Override
 	public ITerm innermostChStart(String a, ITerm F) {
-		return new InnermostChStart(a, F);
+		return new InnermostChStar(a, F);
 	}
 
 	@Override
 	public ITerm outermostChStart(String a, ITerm F) {
-		return new OutermostChStart(a, F);
+		return new OutermostChStar(a, F);
 	}
 
 	@Override
 	public IAccumulator chStarLocal(int n, ILocal L) {
-		return new ChStartLocalAcc(n, L);
+		return new ChStarLocalAcc(n, L);
 	}
 
 	@Override
@@ -82,8 +111,8 @@ public class FXPPlusFactory implements IFXPPlusFactory {
 	}
 
 	@Override
-	public ILocal label(String A) {
-		return new LocalLabel(A);
+	public ILocal label(String uri, String A) {
+		return new LocalLabel(uri, A);
 	}
 
 	@Override
@@ -104,13 +133,13 @@ public class FXPPlusFactory implements IFXPPlusFactory {
 	}
 
 	@Override
-	public ILocal attribute(IText T) {
-		return new Attribute(T);
+	public ILocal attribute(String uri, IText T) {
+		return new Attribute(uri, T);
 	}
 
 	@Override
-	public ILocal attribute(String a, IText T) {
-		return new Attribute(a, T);
+	public ILocal attribute(String a, String uri, IText T) {
+		return new Attribute(a, uri, T);
 	}
 
 	@Override
@@ -119,8 +148,8 @@ public class FXPPlusFactory implements IFXPPlusFactory {
 	}
 
 	@Override
-	public ILocal PI() {
-		return new PI();
+	public ILocal PI(ILocal label) {
+		return new PI(label);
 	}
 
 	@Override
@@ -180,7 +209,7 @@ public class FXPPlusFactory implements IFXPPlusFactory {
 
 	@Override
 	public ITerm chStarLocal(ILocal L) {
-		return new ChStartLocal(L);
+		return new ChStarLocal(L);
 	}
 
 	@Override

@@ -21,9 +21,9 @@ package com.quixpath.interfaces;
 import innovimax.quixproc.datamodel.IStream;
 import innovimax.quixproc.datamodel.MatchEvent;
 import innovimax.quixproc.datamodel.QuixEvent;
+import innovimax.quixproc.datamodel.QuixValue;
 
 import com.quixpath.exceptions.QuiXPathException;
-import com.quixpath.internal.mvc.listeners.IBufferListener;
 
 /**
  * IQuiXPathExpression provides access to compiled QuiXPath expressions.
@@ -45,16 +45,7 @@ public interface IQuiXPathExpression {
 	 */
 	public IStream<MatchEvent> update(QuixEvent event) throws QuiXPathException;
 
-	/**
-	 * Return true if the query is evaluated in a streaming mode.
-	 * 
-	 * Ih the return value is false, then the evaluation will build the DOM of
-	 * the document.
-	 * 
-	 * @return true iff the query is evaluated with a streaming algorithm.
-	 */
-	public boolean isStreamingEvaluation();
-
-	public void addBufferListener(IBufferListener listener);
+	public QuixValue evaluate(IStream<QuixEvent> stream)
+			throws QuiXPathException;
 
 }

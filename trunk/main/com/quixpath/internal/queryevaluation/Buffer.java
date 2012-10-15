@@ -20,92 +20,143 @@ package com.quixpath.internal.queryevaluation;
 
 import innovimax.quixproc.datamodel.IStream;
 import innovimax.quixproc.datamodel.MatchEvent;
+import innovimax.quixproc.datamodel.QuixEvent;
+import innovimax.quixproc.datamodel.QuixException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Stack;
 
-import com.quixpath.internal.events.IQuixPathEvent;
 import com.quixpath.internal.mvc.listeners.IBufferListener;
 
-// TODO make an immutable buffer?
-// safe thread? NO
+/**
+ * The buffer is a partial tree (DOM) on the document.
+ * 
+ */
 public class Buffer implements IBuffer {
 
-	private final LinkedList<IQuixPathEvent> buffer;
-
-	public Buffer() {
-		super();
-		buffer = new LinkedList<IQuixPathEvent>();
-		listeners = new ArrayList<IBufferListener>();
-	}
-
-	@Override
-	public void write(final IQuixPathEvent event) {
-		buffer.addFirst(event);
-		fireWrite(event);
-	}
+	private Map<Integer, Node> undetermine = new HashMap<Integer, Node>();
+	private Stack<Node> stacks = new Stack<Node>();
+	private LinkedList<Node> buffer = new LinkedList<Node>();
 
 	@Override
 	public IStream<MatchEvent> read() {
 		return new IStream<MatchEvent>() {
 
 			@Override
-			public boolean hasNext() {
-				if (buffer.isEmpty()) {
-					return false;
-				}
-				IQuixPathEvent quixPathEvent = buffer.getLast();
-				return quixPathEvent.canOutputed();
+			public MatchEvent next() throws QuixException {
+				MatchEvent res = buffer.removeFirst().getMatchEvent();
+				fireRead(res);
+				return res;
 
 			}
 
 			@Override
-			public MatchEvent next() {
-				final IQuixPathEvent quixPathEvent = buffer.removeLast();
-				assert quixPathEvent.getQuixEvent() != null;
-				while (!buffer.isEmpty()
-						&& buffer.getLast().getQuixEvent() == null) {
-					buffer.removeLast();
+			public boolean hasNext() throws QuixException {
+				if (buffer.isEmpty()) {
+					return false;
 				}
-				fireRead(quixPathEvent);
-				return quixPathEvent.toMatchEvent();
+				return buffer.getFirst().canOutput();
 			}
 
 			@Override
 			public void close() {
+				// TODO Auto-generated method stub
 
 			}
-
 		};
+
 	}
 
-	private void fireRead(IQuixPathEvent event) {
-		for (IBufferListener listener : listeners) {
-			listener.read(event);
+	public void select(Integer nodeId) {
+		undetermine.remove(nodeId).select();
+	}
+
+	public void reject(Integer nodeId) {
+		undetermine.remove(nodeId).reject();
+	}
+
+	@Override
+	public void write(QuixEvent quixEvent, Integer nodeId, boolean reject) {
+		fireWrite(quixEvent);
+		Node node;
+		switch (quixEvent.getType()) {
+		case START_DOCUMENT:
+		case START_ELEMENT:
+		case START_SEQUENCE:
+			node = new Node(quixEvent);
+			undetermine.put(nodeId, node);
+			stacks.push(node);
+			buffer.addLast(node);
+			if (reject) {
+				reject(nodeId);
+			}
+			break;
+		case END_DOCUMENT:
+		case END_ELEMENT:
+		case END_SEQUENCE:
+			node = stacks.pop();
+			node.setCloseEvent(quixEvent);
+			buffer.addLast(node);
+			break;
+		case ATTRIBUTE:
+		case TEXT:
+		case PI:
+		case COMMENT:
+			node = new Node(quixEvent);
+			undetermine.put(nodeId, node);
+			buffer.addLast(node);
+			if (reject) {
+				reject(nodeId);
+			}
+			break;
+		default:
+			break;
+		}
+
+	}
+
+	private List<IBufferListener> listeners = null;
+
+	private void fireRead(MatchEvent event) {
+		if (listeners != null) {
+			for (IBufferListener listener : listeners) {
+				listener.read(event.getEvent());
+			}
 		}
 	}
 
-	private void fireWrite(IQuixPathEvent event) {
-		for (IBufferListener listener : listeners) {
-			listener.write(event);
+	private void fireWrite(QuixEvent event) {
+		if (listeners != null) {
+			for (IBufferListener listener : listeners) {
+				listener.write(event);
+			}
 		}
+	}
+
+	@Override
+	public void addListerner(IBufferListener listener) {
+		if (listeners == null) {
+			listeners = new ArrayList<IBufferListener>();
+		}
+		listeners.add(listener);
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return undetermine.isEmpty() && stacks.isEmpty() && buffer.isEmpty();
 	}
 
 	@Override
 	public String toString() {
-		final StringBuffer res = new StringBuffer();
-		for (final IQuixPathEvent event : buffer) {
-			res.append(event.getFxpEvent() + ", ");
-		}
-		return res.toString();
+		return buffer.toString();
 	}
 
-	private final List<IBufferListener> listeners;
-
-	@Override
-	public void addListerner(IBufferListener listener) {
-		listeners.add(listener);
+	public boolean isUndetermine(Integer xId) {
+		return undetermine.get(xId) != null;
 	}
 
 }
