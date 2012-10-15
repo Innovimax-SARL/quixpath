@@ -19,19 +19,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 package com.quixpath.internal.interfaces.impl;
 
 import innovimax.quixproc.datamodel.ConvertException;
-import innovimax.quixproc.datamodel.DOMConverter;
 import innovimax.quixproc.datamodel.IStream;
 import innovimax.quixproc.datamodel.MatchEvent;
 import innovimax.quixproc.datamodel.QuixEvent;
 import innovimax.quixproc.datamodel.QuixException;
 import innovimax.quixproc.datamodel.shared.SmartAppendQueue;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 
-import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XPathExecutable;
 import net.sf.saxon.s9api.XPathSelector;
@@ -40,8 +35,6 @@ import net.sf.saxon.s9api.XdmSequenceIterator;
 import net.sf.saxon.s9api.XdmValue;
 
 import com.quixpath.exceptions.QuiXPathException;
-import com.quixpath.internal.events.IQuixPathEvent;
-import com.quixpath.internal.mvc.listeners.IBufferListener;
 
 /**
  * Compile representation of a query that is not compatible with FXP.
@@ -52,14 +45,11 @@ import com.quixpath.internal.mvc.listeners.IBufferListener;
  * Today, the query engine is SAXON.
  * 
  */
-public class IncompatibleWithFXPExpression extends AbstractQuiXPathExpression {
-
-	private final XPathExecutable xPathExecutable;
-	private List<QuixEvent> buffer;
+/* package */final class SAXONExpression extends AbstractSAXONExpression {
 
 	@Override
 	public IStream<MatchEvent> update(QuixEvent event) throws QuiXPathException {
-		fireWrite(null);
+		fireWrite(event);
 		if (buffer != null) {
 			buffer.add(event);
 		}
@@ -74,11 +64,13 @@ public class IncompatibleWithFXPExpression extends AbstractQuiXPathExpression {
 				final XdmValue values = evaluator.evaluate();
 				final XdmSequenceIterator it = values.iterator();
 				final SmartAppendQueue<MatchEvent> doc = new SmartAppendQueue<MatchEvent>();
+				doc.setReaderCount(1);
 				final IStream<MatchEvent> stream = doc.registerReader();
 				final MyEventConverter eventConverter = new MyEventConverter(
 						doc, node, it);
-				eventConverter.run();
 				buffer = null;
+				eventConverter.run();
+
 				return asSequence(stream);
 			} catch (SaxonApiException e) {
 				throw new QuiXPathException(e);
@@ -103,18 +95,22 @@ public class IncompatibleWithFXPExpression extends AbstractQuiXPathExpression {
 			private boolean sendEndSequence = false;
 
 			@Override
-			public MatchEvent next() throws QuixException {
+			public MatchEvent next() {
 				if (!startSequence) {
 					startSequence = true;
 					return new MatchEvent(QuixEvent.getStartSequence(), false);
 				}
 
-				if (withoutSequence.hasNext()) {
-					final MatchEvent event = withoutSequence.next();
-					if (event.getEvent().isEndDocument()) {
-						sendEndSequence = true;
+				try {
+					if (withoutSequence.hasNext()) {
+						final MatchEvent event = withoutSequence.next();
+						if (event.getEvent().isEndDocument()) {
+							sendEndSequence = true;
+						}
+						return event;
 					}
-					return event;
+				} catch (QuixException e) {
+					new Error(e); // wrap the exception in an error.
 				}
 				if (sendEndSequence) {
 					endSequence = true;
@@ -132,37 +128,6 @@ public class IncompatibleWithFXPExpression extends AbstractQuiXPathExpression {
 			public void close() {
 				// empty
 			}
-		};
-	}
-
-	private XdmNode getContextItem() throws ConvertException {
-	    //System.out.println("getContextItem");
-		final DocumentBuilder db = processor().newDocumentBuilder();
-		final IStream<QuixEvent> reader = bufferReader();
-		final DOMConverter converter = new DOMConverter(db, reader);
-		return converter.exec();
-	}
-
-	private IStream<QuixEvent> bufferReader() {
-		return new IStream<QuixEvent>() {
-			Iterator<QuixEvent> it = buffer.iterator();
-
-			@Override
-			public boolean hasNext() {
-				return it.hasNext();
-			}
-
-			@Override
-			public QuixEvent next() {
-				fireRead(null);
-				return it.next();
-			}
-
-			@Override
-			public void close() {
-				// empty body
-			}
-
 		};
 	}
 
@@ -188,41 +153,23 @@ public class IncompatibleWithFXPExpression extends AbstractQuiXPathExpression {
 		};
 	}
 
-	@Override
-	public boolean isStreamingEvaluation() {
-		return false;
+	/* package */SAXONExpression(XPathExecutable xPathExecutable) {
+		super(xPathExecutable);
 	}
-
-	public IncompatibleWithFXPExpression(XPathExecutable xPathExecutable) {
-		super();
-		this.xPathExecutable = xPathExecutable;
-	}
-
-	// TODO Share the code about listeners.
-	private List<IBufferListener> listeners;
 
 	@Override
-	public void addBufferListener(final IBufferListener listener) {
-		if (listeners == null) {
-			listeners = new ArrayList<IBufferListener>();
+	public boolean isEmpty() {
+		if (buffer == null) {
+			return true; // TODO ???
 		}
-		listeners.add(listener);
+		return buffer.isEmpty();
 	}
 
-	private void fireRead(IQuixPathEvent event) {
-		if (listeners != null) {
-			for (IBufferListener listener : listeners) {
-				listener.read(event);
-			}
-		}
-	}
-
-	private void fireWrite(IQuixPathEvent event) {
-		if (listeners != null) {
-			for (IBufferListener listener : listeners) {
-				listener.write(event);
-			}
-		}
+	@Override
+	public String toString() {
+		return "SAXONExpression [xPathExpression="
+				+ xPathExecutable.getUnderlyingExpression()
+						.getInternalExpression() + "]";
 	}
 
 }

@@ -21,9 +21,11 @@ package com.quixpath.interfaces;
 import innovimax.quixproc.datamodel.IStream;
 import innovimax.quixproc.datamodel.MatchEvent;
 import innovimax.quixproc.datamodel.QuixEvent;
+import innovimax.quixproc.datamodel.QuixValue;
 
 import com.quixpath.exceptions.QuiXPathException;
 import com.quixpath.exceptions.UnsupportedQueryException;
+import com.quixpath.interfaces.context.IStaticContext;
 
 /**
  * IQuiXPath interface provides access to the QuiXPath evaluation environment
@@ -38,12 +40,14 @@ public interface IQuiXPath {
 	 * 
 	 * @param xpathQuery
 	 *            The XPath expression.
+	 * @param staticContext
+	 *            The context. Set it to null if there is no context.
 	 * @return Compiled XPath expression.
 	 * @throws UnsupportedQueryException
 	 *             If the query can not be compiled.
 	 */
-	public IQuiXPathExpression compile(String xpathQuery)
-			throws UnsupportedQueryException;
+	public IQuiXPathExpression compile(String xpathQuery,
+			IStaticContext staticContext, boolean canUseTree) throws UnsupportedQueryException;
 
 	/**
 	 * Evaluate a query on a stream of event. Event are send one by one via this
@@ -60,5 +64,8 @@ public interface IQuiXPath {
 	 */
 	public IStream<MatchEvent> update(IQuiXPathExpression expression,
 			QuixEvent event) throws QuiXPathException;
+
+	public QuixValue evaluate(IQuiXPathExpression expression,
+			IStream<QuixEvent> stream) throws QuiXPathException;
 
 }
