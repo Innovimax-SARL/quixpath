@@ -1,6 +1,6 @@
 /*
 QuiXPath: efficient evaluation of XPath queries on XML streams.
-Copyright (C) 2011 Innovimax and INRIA
+Copyright (C) 2009-2012 Innovimax and INRIA
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -49,6 +49,19 @@ public interface IQuiXPath {
 	public IQuiXPathExpression compile(String xpathQuery,
 			IStaticContext staticContext, boolean canUseTree) throws UnsupportedQueryException;
 
+	
+	/**
+	 * 
+	 * compile(xpathQuery, staticContext, true)
+	 * 
+	 * @param xpathQuery
+	 * @param staticContext
+	 * @return
+	 * @throws UnsupportedQueryException
+	 */
+	public IQuiXPathExpression compile(String xpathQuery,
+			IStaticContext staticContext) throws UnsupportedQueryException;
+	
 	/**
 	 * Evaluate a query on a stream of event. Event are send one by one via this
 	 * method.

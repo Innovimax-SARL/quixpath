@@ -1,6 +1,6 @@
 /*
 QuiXPath: efficient evaluation of XPath queries on XML streams.
-Copyright (C) 2011 Innovimax and INRIA
+Copyright (C) 2009-2012 Innovimax and INRIA
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
